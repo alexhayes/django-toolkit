@@ -1,0 +1,1 @@
+# Left blank intentionally to trick django into thinking we are an app (template tags...)
