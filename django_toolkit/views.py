@@ -18,6 +18,7 @@ from django.utils.importlib import import_module
 from django.core.serializers.json import DjangoJSONEncoder
 from django.views.generic.dates import YearMixin, MonthMixin, DayMixin,\
     _date_from_string
+import collections
 
 JSON_ENCODER = getattr(settings, 'JSON_ENCODER', False)
 if JSON_ENCODER:
@@ -243,7 +244,9 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     # A list of methods that should be called
     methods = []
     # A list of errors that should be ignored
-    expect = []  # 
+    expect = []
+    # A success_message to add to the messages stack
+    success_messages = None
     
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -255,6 +258,13 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                 for method in self.methods:
                     getattr(self.object, method)()
             # Redirect back or next
+            if self.success_messages:
+                if isinstance(self.success_messages, collections.Iterable):
+                    for message, level in self.success_messages:
+                        messages.add_message(request, level, message)
+                else:
+                    messages.success(request, self.success_message)
+                    
             return RedirectNextOrBackView.get(self, request, *args, **kwargs)
         except Exception as e:
             if e.__class__ not in self.expect:
