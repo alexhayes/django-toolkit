@@ -1,0 +1,26 @@
+{% load crispy_forms_tags %}
+{% for key, value in form.errors.items %}
+<div class="alert alert-error">
+{{ key }} {{ value }}
+</div>
+{% endfor %}
+
+<form action="{{ action }}" method="post" class="generic-form {{ form.helper.form_class }}" enctype="multipart/form-data">
+	{% if request.REQUEST.next %}
+		<input type="hidden" name="next" value="{{ request.REQUEST.next }}"/>
+	{% endif %}
+	{% if form.helper %}
+		{% crispy form %}
+		{% if form.helper.js %}
+		<script type="text/javascript">
+			{{ form.helper.js|safe }}
+		</script>
+		{% endif %}
+	{% else %}
+		{% crispy form crispy_default_helper %}
+	{% endif %}
+	
+	<div class="form-actions">
+		<input type="submit" name="submit" value="{% if submit_button_value %}{{ submit_button_value }}{% else %}Submit{% endif %}" class="btn btn-primary">
+	</div>
+</form>

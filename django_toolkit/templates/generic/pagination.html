@@ -1,0 +1,22 @@
+{% if objects.paginator.num_pages > 1 %}
+	{% load sliced_pagination %}
+	<div class="pagination-container">
+	   	<div class="pull-left">
+			Page {{ objects.number }} of {{ objects.paginator.num_pages }}.
+		</div>
+	    <div class="pagination pagination-right">
+	    	<ul>
+			    {% sliced_pagination objects 5 as sliced_paginator %}
+			    <li class="{% if not objects.has_previous %}disabled{% endif %}"><a href="{% if objects.has_previous %}?page={{ objects.previous_page_number }}{% endif %}">&laquo;</a></li>
+			    {% for pageno in sliced_paginator.prev_pages %}
+			        <li><a href="?page={{ pageno }}">{{ pageno }}</a></li>
+			    {% endfor %}
+			    <li class="active"><a href="?page={{ objects.number }}">{{ objects.number }}</a></li>
+			    {% for pageno in sliced_paginator.next_pages %}
+			        <li><a href="?page={{ pageno }}">{{ pageno}}</a></li>
+			    {% endfor %}
+			    <li class="{% if not objects.has_next %}disabled{% endif %}"><a href="{% if objects.has_next %}?page={{ objects.next_page_number }}{% endif %}">&raquo;</a></li>
+		    </ul>
+		</div>
+	</div>
+{% endif %}

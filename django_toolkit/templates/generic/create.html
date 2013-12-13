@@ -1,0 +1,10 @@
+{% extends "generic/base.html" %}
+{% load widget_tweaks buttons %}
+
+{% block title %}{% if title %}{{ title|striptags }}{% else %}Create{% endif %}{% endblock %}
+{% block body_class %}{{ block.super }} {{ block.super }}-create{% endblock %}
+
+{% block content %}
+	<h1>{% if title %}{{ title|safe }}{% else %}Create{% endif %}</h1>
+	{% include "generic/form.html" %}
+{% endblock %}
