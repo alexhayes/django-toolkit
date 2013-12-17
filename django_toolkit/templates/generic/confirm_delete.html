@@ -1,0 +1,23 @@
+{% extends "generic/base.html" %}
+{% load widget_tweaks buttons %}
+
+{% block title %}Delete {{ object }}{% endblock %}
+{% block body_class %}{{ block.super }} {{ block.super }}-delete{% endblock %}
+
+{% block content %}
+  <div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+    <h3>Delete: {{ object }}</h3>
+  </div>
+  <div class="modal-body">
+    <p>Are you sure you want to <strong>permanently</strong> delete <em>{{ object }}</em>?</p>
+  </div>
+  <div class="modal-footer">
+    <form method="post" action="{{ request.path }}" class="left">
+		{% csrf_token %}
+		<input type="hidden" name="next" value="{{ next }}">
+		{% button title='Permanently Delete!' css="btn btn-danger" %}
+	</form>
+    <a href="#" class="btn" data-dismiss="modal">Back to safety...</a>
+  </div>
+{% endblock %}
