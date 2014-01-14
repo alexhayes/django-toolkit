@@ -88,7 +88,7 @@ class Button():
                  view=None, view_kwargs=[], view_args=[], next=None,
                  href=None, 
                  title=None, a_attrs={}, target=False,
-                 modal=False, data_target=False):
+                 modal=False, data_target=True):
         self.inner = inner
         self.href = href
         self.view = view
@@ -98,6 +98,7 @@ class Button():
         self.a_attrs = a_attrs
         self.next = next
         self.modal = modal
+        self.data_target = data_target
         self.data_tip = data_tip
         self.target = target
     

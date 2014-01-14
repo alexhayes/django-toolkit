@@ -298,13 +298,16 @@ class BaseDayView(YearMixin, MonthMixin, DayMixin):
                                  month, self.get_month_format(),
                                  day, self.get_day_format())
 
-class ModelExtraContextDetailView(DetailView):
+class ModelExtraContextMixin(View):
     """
     A DetailView that gets extra context from the model. 
     """
     
     def get_context_data(self, **kwargs):
-        context = super(ModelExtraContextDetailView, self).get_context_data(**kwargs)
+        context = super(ModelExtraContextMixin, self).get_context_data(**kwargs)
         if self.object and hasattr(self.object, 'detail_view_context'):
             context.update(**self.object.detail_view_context(self))
         return context
+
+class ModelExtraContextDetailView(ModelExtraContextMixin, DetailView): pass
+class ModelExtraContextUpdateView(ModelExtraContextMixin, GenericUpdateView): pass
