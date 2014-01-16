@@ -1,4 +1,5 @@
 from django.core.urlresolvers import reverse
+from copy import copy
 
 class Icon():
     """
@@ -109,7 +110,7 @@ class Button():
         html = ''
         href = self.view if self.view is not None else self.href
         if href:
-            a_attrs = self.a_attrs
+            a_attrs = copy(self.a_attrs)
             if self.view:
                 href = reverse(self.view, args=self.view_args, kwargs=self.view_kwargs)
             if self.next:
