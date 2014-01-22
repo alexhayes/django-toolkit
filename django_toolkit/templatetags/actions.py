@@ -11,5 +11,8 @@ def actions(obj, **kwargs):
     """
     if 'exclude' in kwargs:
         kwargs['exclude'] = kwargs['exclude'].split(',')
-    buttons = "".join("%s" % action.render() for action in obj.get_actions(**kwargs))
+    actions = obj.get_actions(**kwargs)
+    if isinstance(actions, dict):
+        actions = actions.values()
+    buttons = "".join("%s" % action.render() for action in actions)
     return '<div class="actions">%s</div>' % buttons
