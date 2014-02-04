@@ -1,6 +1,8 @@
 import logging
 from django.db import models
 from django.db import connection
+import os
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -82,3 +84,15 @@ class LockingManager(models.Manager):
         return row
 
 class LockingQuerySetManager(QuerySetManager, LockingManager): pass
+
+def upload_to(path, filename):
+    try:
+        dir = os.path.join(settings.MEDIA_ROOT, path)
+        os.makedirs(dir, settings.FILE_UPLOAD_PERMISSIONS)
+    except OSError:
+        # Someone beat us to the punch
+        if not os.path.isdir( dir ):
+            # Nope, must be something else...
+            raise
+    return os.path.join(path, filename)
+    
