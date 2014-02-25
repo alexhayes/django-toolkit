@@ -13,7 +13,7 @@ def base_site_url():
     return "%s://%s" % (default_http_protocol, current_site.domain)
 
 @register.filter
-def foreign_a(value, include_base=False):
+def foreign_a(value, include_base=False, text=None):
     if hasattr(value, 'get_absolute_url'):
         if include_base:
             base_url = base_site_url()
@@ -25,7 +25,9 @@ def foreign_a(value, include_base=False):
             data_tip = ' data-tip="%s"' % value.get_data_tip()
         if hasattr(value, 'get_append_markup'):
             prepend = value.get_append_markup()
-        return mark_safe('<a href="%s%s"%s>%s</a>%s' % (base_url, value.get_absolute_url(), data_tip, value, prepend))
+        if text is None:
+            text = '%s' % value
+        return mark_safe('<a href="%s%s"%s>%s</a>%s' % (base_url, value.get_absolute_url(), data_tip, text, prepend))
     return mark_safe(value)
 
 def context_processor():
