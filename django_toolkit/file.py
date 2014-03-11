@@ -6,16 +6,22 @@ from contextlib import contextmanager
 from django.core.files.base import File
 
 @contextmanager
-def smart_open(filename=None, *args, **kwargs):
+def smart_open(filename=None, mode='r', *args, **kwargs):
     if filename and filename != '-':
-        fh = open(filename, *args, **kwargs)
-    else:
+        fh = open(filename, mode, *args, **kwargs)
+    elif '+' in mode:
+        raise NotImplementedError("Mode '+' is not supported by smart_open.")
+    elif 'a' in mode:
+        raise NotImplementedError("Mode 'a' is not supported by smart_open.")
+    elif 'w' in mode:
         fh = sys.stdout
+    elif 'r' in mode:
+        fh = sys.stdin
 
     try:
         yield fh
     finally:
-        if fh is not sys.stdout:
+        if fh is not sys.stdout and fh is not sys.stdin:
             fh.close()
 
 @contextmanager
