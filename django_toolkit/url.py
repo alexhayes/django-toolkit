@@ -30,5 +30,12 @@ def shorten_url(url, length=32, strip_www=True):
         domain = '%s...%s' % (domain[:left], domain[-right:])
         return '%s.%s' % (domain, ext.tld)
 
-     
-
+def netloc_no_www(url):
+    """
+    For a given URL return the netloc with any www. striped.
+    """
+    ext = cached_tldextract(url)
+    if ext.subdomain and ext.subdomain != 'www':
+        return '%s.%s.%s' % (ext.subdomain, ext.domain, ext.tld) 
+    else:
+        return '%s.%s' % (ext.domain, ext.tld)
