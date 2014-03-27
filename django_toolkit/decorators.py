@@ -1,4 +1,5 @@
-from django.contrib.auth.decorators import login_required as django_login_required
+from django.contrib.auth.decorators import login_required as django_login_required,\
+    permission_required
 
 """
 Patch view decorators.
@@ -26,3 +27,9 @@ def patch_view_decorator(dec):
     return _conditional
 
 class_login_required = patch_view_decorator(django_login_required)
+
+def permission_required_raise(perm, login_url=None, raise_exception=True):
+    """
+    A permission_required decorator that raises by default.
+    """
+    return permission_required(perm, login_url=login_url, raise_exception=raise_exception)
