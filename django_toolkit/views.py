@@ -311,3 +311,80 @@ class ModelExtraContextMixin(View):
 
 class ModelExtraContextDetailView(ModelExtraContextMixin, DetailView): pass
 class ModelExtraContextUpdateView(ModelExtraContextMixin, GenericUpdateView): pass
+
+class XEditableGenericUpdateView(GenericUpdateView, AjaxMixin):
+    """
+    A view that can be used with jQuery plugin X-Editable to process updates on a single field.
+    
+    For example:
+
+        # models.py
+
+        {{{#!python
+        class Car(models.Model):
+            ...
+            color = models.CharField(max_length=128)
+            ...
+        }}}
+    
+        # forms.py
+        
+        {{{#!python
+        class SetColourForm(forms.ModelForm):
+            class Meta:
+                model = Car
+                fields = ('colour',)
+        }}}
+      
+        # urls.py
+        
+        {{{#!python
+        url(r'^car/(?P<pk>\d+)/set-colour/$', 
+            view=permission_required_raise('cars.change_car')(XEditableGenericUpdateView.as_view(
+                model=Car,
+                form_class=SetColourForm,
+                field_name='colour',    
+            )),
+            name="cars:car:setcolour", 
+        )
+        }}}
+    
+        # init.js
+        
+        {{{#!js
+        $('#color').editable({
+            params: function(params) {  //params already contain `name`, `value` and `pk`
+                var data = {};
+                data[params.name] = params.value;
+                return data;
+            },
+            success: function(response, newValue) {
+                if(!response.success) return response.msg; //msg will be shown in editable form
+            }
+        });
+        }}}
+        
+    :see: http://vitalets.github.io/x-editable/docs.html
+    """
+    
+    field_name = None
+    
+    def form_invalid(self, form):
+        if self.is_ajax():
+            errors = form.errors  #: :type errors: ErrorDict
+            context = dict(success=False, 
+                           msg=",".join([v.as_text() for k, v in errors.items()]))
+            return AjaxMixin.render_to_response(self, context)
+        else:
+            return GenericUpdateView.form_invalid(self, form)
+    
+    def form_valid(self, form):
+        if self.is_ajax():
+            self.object = form.save()
+            context = dict(success=True, newValue=self.new_value(self.object))
+            return AjaxMixin.render_to_response(self, context)
+        else:
+            return GenericUpdateView.form_valid(self, form)
+
+    def new_value(self, obj):
+        return getattr(obj, self.field_name)
