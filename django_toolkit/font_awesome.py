@@ -88,15 +88,17 @@ class Button():
     def __init__(self, inner=None, data_tip=None,
                  view=None, view_kwargs=[], view_args=[], next=None,
                  href=None, 
-                 title=None, a_attrs={}, target=False,
-                 modal=False, data_target=True):
+                 title=None, attrs={}, target=False,
+                 modal=False, data_target=True, 
+                 css=[]):
         self.inner = inner
         self.href = href
         self.view = view
         self.view_args = view_args
         self.view_kwargs = view_kwargs
         self.title = title
-        self.a_attrs = a_attrs
+        self.attrs = attrs
+        self.css = [css] if isinstance(css, basestring) else css 
         self.next = next
         self.modal = modal
         self.data_target = data_target
@@ -106,33 +108,41 @@ class Button():
     def render(self):
         """
         <a class="btn" href="#"><i class="icon-repeat"></i> Reload</a>
+        
+        or..
+        
+        <button type="button" class="btn"><i class="icon-repeat"></i> Reload</button>
         """
         html = ''
         href = self.view if self.view is not None else self.href
+        
+        attrs = copy(self.attrs)
+        if self.modal:
+            attrs['role'] = "button"
+            attrs['data-toggle'] = "modal"
+            attrs['data-remoteinbody'] = "false"
+            if self.data_target:
+                if isinstance(self.data_target, basestring):
+                    attrs['data-target'] = self.data_target
+                else:
+                    attrs['data-target'] = "#modal"
+        if self.data_tip:
+            attrs['data-tip'] = self.data_tip
+        if self.target:
+            attrs['target'] = self.target
+        if 'css_class' not in attrs:
+            attrs['css_class'] = ''
+        attrs['css_class'] += ' btn ' + " ".join(self.css)
+        attrs = ' '.join(['%s="%s"' % (key if key != 'css_class' else 'class', value) for key,value in attrs.iteritems()])
+        
         if href:
-            a_attrs = copy(self.a_attrs)
             if self.view:
                 href = reverse(self.view, args=self.view_args, kwargs=self.view_kwargs)
             if self.next:
                 href += '?next=%s' % (self.next if self.next.startswith('/') else reverse(self.next))
-            if self.modal:
-                a_attrs['role'] = "button"
-                a_attrs['data-toggle'] = "modal"
-                a_attrs['data-remoteinbody'] = "false"
-                if self.data_target:
-                    if isinstance(self.data_target, basestring):
-                        a_attrs['data-target'] = self.data_target
-                    else:
-                        a_attrs['data-target'] = "#modal"
-            if self.data_tip:
-                a_attrs['data-tip'] = self.data_tip
-            if self.target:
-                a_attrs['target'] = self.target
-            if 'css_class' not in a_attrs:
-                a_attrs['css_class'] = ''
-            a_attrs['css_class'] += ' btn'
-            a_attrs = ' '.join(['%s="%s"' % (key if key != 'css_class' else 'class', value) for key,value in a_attrs.iteritems()])
-            html += '<a href="%s" %s>' % (href, a_attrs)
+            html += '<a href="%s" %s>' % (href, attrs)
+        else:
+            html += '<button type="button" %s>' % (attrs,)
         
         if hasattr(self.inner, 'render'):
             html += self.inner.render()
@@ -144,6 +154,8 @@ class Button():
         
         if href:
             html += "</a>"
+        else:
+            html += "</button>"
         
         return html
             

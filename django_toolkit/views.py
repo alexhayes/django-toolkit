@@ -248,6 +248,12 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     # A success_message to add to the messages stack
     success_messages = None
     
+    def callable_args(self, request, *args, **kwargs):
+        return {}
+    
+    def callable_kwargs(self, request, *args, **kwargs):
+        return {}
+    
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         try:
@@ -256,7 +262,8 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                     getattr(self.object, method)(**method_kwargs)
             else:
                 for method in self.methods:
-                    getattr(self.object, method)()
+                    getattr(self.object, method)(*self.callable_args(request, *args, **kwargs), 
+                                                 **self.callable_kwargs(request, *args, **kwargs))
             # Redirect back or next
             if self.success_messages:
                 if isinstance(self.success_messages, collections.Iterable):
@@ -273,6 +280,13 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
             else:
                 messages.add_message(request, messages.ERROR, e)
                 return RedirectNextOrBackView.get(self, request, *args, **kwargs)
+
+class AcceptsUserModelCallMethodsView(ModelCallMethodsView):
+    
+    def callable_kwargs(self, request, *args, **kwargs):
+        kwargs = ModelCallMethodsView.callable_kwargs(self, request, *args, **kwargs)
+        kwargs.update(user=request.user)
+        return kwargs
 
 @class_login_required
 class LoginRequiredModelCallMethodsView(ModelCallMethodsView): pass
