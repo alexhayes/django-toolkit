@@ -89,7 +89,8 @@ class Button():
                  view=None, view_kwargs=[], view_args=[], next=None,
                  href=None, 
                  title=None, attrs={}, target=False,
-                 modal=False, data_target=True, 
+                 modal=False, submodal=False, 
+                 data_target=True, 
                  css=[]):
         self.inner = inner
         self.href = href
@@ -101,6 +102,7 @@ class Button():
         self.css = [css] if isinstance(css, basestring) else css 
         self.next = next
         self.modal = modal
+        self.submodal = submodal
         self.data_target = data_target
         self.data_tip = data_tip
         self.target = target
@@ -117,15 +119,26 @@ class Button():
         href = self.view if self.view is not None else self.href
         
         attrs = copy(self.attrs)
-        if self.modal:
+        if self.submodal:
             attrs['role'] = "button"
+            attrs['data-toggle'] = "remote-submodal"
+            if self.data_target:
+                if isinstance(self.data_target, basestring):
+                    attrs['data-target'] = self.data_target
+                else:
+                    attrs['data-target'] = "#submodal"
+        elif self.modal:
+            attrs['role'] = "button"
+            #attrs['data-dismiss'] = "modal"
             attrs['data-toggle'] = "modal"
-            attrs['data-remoteinbody'] = "false"
+            #attrs['data-submodal'] = "true"
+            #attrs['data-remoteinbody'] = "false"
             if self.data_target:
                 if isinstance(self.data_target, basestring):
                     attrs['data-target'] = self.data_target
                 else:
                     attrs['data-target'] = "#modal"
+            
         if self.data_tip:
             attrs['data-tip'] = self.data_tip
         if self.target:
