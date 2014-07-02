@@ -222,7 +222,7 @@ class AjaxMixin(object):
         return self.request.META.get('HTTP_X_REQUESTED_WITH') == 'XMLHttpRequest'
     
     def accepts_json(self):
-        return 'json' in self.request.META.get('HTTP_ACCEPT') or self.request.REQUEST.get('json', False) != False
+        return 'json' in self.request.META.get('HTTP_ACCEPT', []) or self.request.REQUEST.get('json', False) != False
     
     def render_to_response(self, context, **response_kwargs):
         """
