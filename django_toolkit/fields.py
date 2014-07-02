@@ -55,7 +55,7 @@ class SeparatedValuesField(models.TextField):
             return value
         return value.split(self.separator)
 
-    def get_db_prep_value(self, value, connection, prepared=False):
+    def get_db_prep_value(self, value, connection=None, prepared=False):
         """Returns field's value prepared for interacting with the database
         backend.
 
