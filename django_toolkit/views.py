@@ -19,6 +19,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.views.generic.dates import YearMixin, MonthMixin, DayMixin,\
     _date_from_string
 import collections
+from django.core.exceptions import ValidationError
 
 JSON_ENCODER = getattr(settings, 'JSON_ENCODER', False)
 if JSON_ENCODER:
@@ -278,7 +279,11 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                 # If we don't expect this exception, raise it.
                 raise
             else:
-                messages.add_message(request, messages.ERROR, e)
+                if isinstance(e, ValidationError):
+                    for message in e.messages:
+                        messages.add_message(request, messages.ERROR, message)
+                else:
+                    messages.add_message(request, messages.ERROR, e)
                 return RedirectNextOrBackView.get(self, request, *args, **kwargs)
 
 class AcceptsUserModelCallMethodsView(ModelCallMethodsView):
