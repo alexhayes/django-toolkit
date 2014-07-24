@@ -66,6 +66,12 @@ class RedirectNextDeleteView(DeleteView):
     Generic view that redirects to request next parameter - if set.
     """
     success_view = False
+    permanent_delete = True
+    template_name = 'generic/confirm_delete.html'
+    
+    def get_context_data(self, **kwargs):
+        kwargs.update(permanent_delete=self.permanent_delete)
+        return super(RedirectNextDeleteView, self).get_context_data(**kwargs)
     
     def get_success_url(self):
         if self.request.POST.has_key('next'):
@@ -248,6 +254,8 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     expect = []
     # A success_message to add to the messages stack
     success_messages = None
+    # Outcomes/return from each method call
+    outcomes = {}
     
     def callable_args(self, request, *args, **kwargs):
         return {}
@@ -263,8 +271,8 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                     getattr(self.object, method)(**method_kwargs)
             else:
                 for method in self.methods:
-                    getattr(self.object, method)(*self.callable_args(request, *args, **kwargs), 
-                                                 **self.callable_kwargs(request, *args, **kwargs))
+                    self.outcomes[method] = getattr(self.object, method)(*self.callable_args(request, *args, **kwargs),
+                                                                         **self.callable_kwargs(request, *args, **kwargs))
             # Redirect back or next
             if self.success_messages:
                 if isinstance(self.success_messages, collections.Iterable):
