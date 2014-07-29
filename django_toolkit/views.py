@@ -266,7 +266,7 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     def get_callable(self, obj, method):
         return getattr(obj, method)
 
-    def call(self, obj, method):
+    def call(self, obj, method, request, *args, **kwargs):
         return self.get_callable(obj, method)(*self.callable_args(request, *args, **kwargs),
                                               **self.callable_kwargs(request, *args, **kwargs))
 
