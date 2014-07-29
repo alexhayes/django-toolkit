@@ -262,7 +262,14 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     
     def callable_kwargs(self, request, *args, **kwargs):
         return {}
-    
+
+    def get_callable(self, obj, method):
+        return getattr(obj, method)
+
+    def call(self, obj, method):
+        return self.get_callable(obj, method)(*self.callable_args(request, *args, **kwargs),
+                                              **self.callable_kwargs(request, *args, **kwargs))
+
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         try:
@@ -271,8 +278,8 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                     getattr(self.object, method)(**method_kwargs)
             else:
                 for method in self.methods:
-                    self.outcomes[method] = getattr(self.object, method)(*self.callable_args(request, *args, **kwargs),
-                                                                         **self.callable_kwargs(request, *args, **kwargs))
+                    self.outcomes[method] = self.call(self.object, method, request, *args, **kwargs)
+                    
             # Redirect back or next
             if self.success_messages:
                 if isinstance(self.success_messages, collections.Iterable):
@@ -293,6 +300,13 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                 else:
                     messages.add_message(request, messages.ERROR, e)
                 return RedirectNextOrBackView.get(self, request, *args, **kwargs)
+
+class CeleryAsyncModelCallMethodsView(ModelCallMethodsView):
+    
+    def call(self, obj, method, request, *args, **kwargs):
+        call_args = self.callable_args(request, *args, **kwargs)
+        call_kwargs = self.callable_kwargs(request, *args, **kwargs)
+        return self.get_callable(obj, method).s(*call_args, **call_kwargs).apply_async()
 
 class AcceptsUserModelCallMethodsView(ModelCallMethodsView):
     
