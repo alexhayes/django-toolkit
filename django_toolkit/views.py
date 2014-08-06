@@ -182,8 +182,20 @@ class FormAcceptsRequestMixin(FormMixin):
 class GenericCreateView(FormAcceptsRequestMixin, CreateView):
     template_name='generic/create.html'
 
+    def get_success_url(self):
+        if self.request.REQUEST.has_key('next'): 
+            return self.request.REQUEST.get('next')
+        else:
+            return super(GenericCreateView, self).get_success_url()
+
 class GenericUpdateView(FormAcceptsRequestMixin, UpdateView):
     template_name='generic/update.html'
+
+    def get_success_url(self):
+        if self.request.REQUEST.has_key('next'): 
+            return self.request.REQUEST.get('next')
+        else:
+            return super(GenericUpdateView, self).get_success_url()
 
 class GenericDeleteView(DeleteView):
     template_name='generic/delete.html'
