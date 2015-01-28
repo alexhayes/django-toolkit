@@ -1,20 +1,22 @@
-from django_toolkit.tldextract import cached_tldextract
+from __future__ import absolute_import
+import tldextract
+
 
 def shorten_url(url, length=32, strip_www=True):
     """
     Shorten a URL by chopping out the middle.
-    
+
     For example if supplied with http://subdomain.example.com.au and length 16
     the following would be returned.
-    
+
     sub...le.com.au
     """
-    ext = cached_tldextract(url)
+    ext = tldextract.extract(url)
     if ext.subdomain and (strip_www == False or (strip_www and ext.subdomain != 'www')):
         url = '%s.%s.%s' % (ext.subdomain, ext.domain, ext.tld)
     else:
         url = '%s.%s' % (ext.domain, ext.tld)
-    
+
     if len(url) <= length:
         return url
     else:
@@ -30,11 +32,12 @@ def shorten_url(url, length=32, strip_www=True):
         domain = '%s...%s' % (domain[:left], domain[-right:])
         return '%s.%s' % (domain, ext.tld)
 
+
 def netloc_no_www(url):
     """
     For a given URL return the netloc with any www. striped.
     """
-    ext = cached_tldextract(url)
+    ext = tldextract.extract(url)
     if ext.subdomain and ext.subdomain != 'www':
         return '%s.%s.%s' % (ext.subdomain, ext.domain, ext.tld) 
     else:

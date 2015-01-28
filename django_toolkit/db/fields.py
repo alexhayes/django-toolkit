@@ -1,13 +1,16 @@
+from datetime import date, datetime
 import time
 import warnings
-from datetime import date, datetime
-from django.db import models
-from django.core import validators
+
 from django.conf import settings
+from django.core import exceptions
+from django.core import validators
+from django.db import models
 from django.utils import timezone
+from south.modelsinspector import add_introspection_rules
+
 
 # see https://code.djangoproject.com/ticket/12276
-
 class UnixDateTimeField(models.DateTimeField):
     """
     UnixTimeStamp field conversion to datetime. 
@@ -65,15 +68,18 @@ class UnixDateTimeField(models.DateTimeField):
         else:
             return '%s' % python_value
 
-    def get_lookup_constraint(self, constraint_class, alias, targets, sources, lookup_type,
+    def get_lookup_constraint(self, constraint_class, alias, targets, sources, lookups,
                               raw_value):
         from django.db.models.sql.where import Constraint
         assert len(targets) == len(sources)
-        
+
+        if len(lookups) > 1:
+            raise exceptions.FieldError('UnixDateTimeField fields do not support nested lookups')
+        lookup_type = lookups[0]
+
         if lookup_type == 'isnull' and self.zero_null and raw_value:
             return (Constraint(alias, targets[0].column, targets[0]), 'exact', None)
         else:
             return (Constraint(alias, targets[0].column, self), lookup_type, raw_value)
 
-from south.modelsinspector import add_introspection_rules
 add_introspection_rules([], ["^django_toolkit\.db\.fields\.UnixDateTimeField"])
