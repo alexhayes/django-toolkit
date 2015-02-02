@@ -73,9 +73,12 @@ class UnixDateTimeField(models.DateTimeField):
         from django.db.models.sql.where import Constraint
         assert len(targets) == len(sources)
 
-        if len(lookups) > 1:
-            raise exceptions.FieldError('UnixDateTimeField fields do not support nested lookups')
-        lookup_type = lookups[0]
+        if isinstance(lookups, basestring):
+            lookup_type = lookups
+        else:
+            if len(lookups) > 1:
+                raise exceptions.FieldError('UnixDateTimeField fields do not support nested lookups')
+            lookup_type = lookups[0]
 
         if lookup_type == 'isnull' and self.zero_null and raw_value:
             return (Constraint(alias, targets[0].column, targets[0]), 'exact', None)

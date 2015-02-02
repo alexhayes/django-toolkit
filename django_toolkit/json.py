@@ -1,11 +1,13 @@
 import datetime
 from django.core.serializers.json import DjangoJSONEncoder
-from money.Money import Money
+from money.Money import Money as OldMoney
+from moneyed import Money
 from django.utils.timezone import is_aware
 import decimal
 
+
 class JSONEncoder(DjangoJSONEncoder):
-    
+
     def default(self, o):
         # See "Date Time String Format" in the ECMA-262 specification.
         if isinstance(o, datetime.datetime):
@@ -33,7 +35,7 @@ class JSONEncoder(DjangoJSONEncoder):
                 + value.seconds * 1000000
                 + value.microseconds
             )
-        elif isinstance(o, Money):
+        elif isinstance(o, Money) or isinstance(o, OldMoney):
             return '%s' % o
         else:
             return super(DjangoJSONEncoder, self).default(o)
