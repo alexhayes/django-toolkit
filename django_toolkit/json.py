@@ -1,9 +1,19 @@
 import datetime
-from django.core.serializers.json import DjangoJSONEncoder
-from money.Money import Money as OldMoney
-from moneyed import Money
-from django.utils.timezone import is_aware
 import decimal
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.utils.timezone import is_aware
+
+try:
+    from moneyed import Money
+except ImportError:
+    Money = None
+
+
+try:
+    from money.Money import Money as OldMoney
+except ImportError:
+    OldMoney = None
 
 
 class JSONEncoder(DjangoJSONEncoder):
@@ -35,7 +45,7 @@ class JSONEncoder(DjangoJSONEncoder):
                 + value.seconds * 1000000
                 + value.microseconds
             )
-        elif isinstance(o, Money) or isinstance(o, OldMoney):
+        elif (Money is not None and isinstance(o, Money)) or (OldMoney is not None and isinstance(o, OldMoney)):
             return '%s' % o
         else:
             return super(DjangoJSONEncoder, self).default(o)
