@@ -43,6 +43,9 @@ def ensure_self(func):
     def inner(*args, **kwargs):
         try:
             self = kwargs.pop('this')
+            if self == args[0]:
+                # Make the assumption that the first argument hasn't been passed in twice...
+                raise KeyError()
             return func(self, *args, **kwargs)
         except KeyError:
             # 'this' wasn't passed, all we can do is assume normal innovation
