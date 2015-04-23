@@ -291,7 +291,7 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
             else:
                 for method in self.methods:
                     self.outcomes[method] = self.call(self.object, method, request, *args, **kwargs)
-                    
+
             # Redirect back or next
             if self.success_messages:
                 if isinstance(self.success_messages, collections.Iterable):
@@ -299,19 +299,20 @@ class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
                         messages.add_message(request, level, message)
                 else:
                     messages.success(request, self.success_message)
-                    
+
             return RedirectNextOrBackView.get(self, request, *args, **kwargs)
         except Exception as e:
-            if e.__class__ not in self.expect:
+            if isinstance(e, ValidationError):
+                for message in e.messages:
+                    messages.add_message(request, messages.ERROR, message)
+                return RedirectNextOrBackView.get(self, request, *args, **kwargs)
+            elif len([expect for expect in self.expect if isinstance(e, expect)]) > 0:
+                messages.add_message(request, messages.ERROR, e)
+                return RedirectNextOrBackView.get(self, request, *args, **kwargs)
+            else:
                 # If we don't expect this exception, raise it.
                 raise
-            else:
-                if isinstance(e, ValidationError):
-                    for message in e.messages:
-                        messages.add_message(request, messages.ERROR, message)
-                else:
-                    messages.add_message(request, messages.ERROR, e)
-                return RedirectNextOrBackView.get(self, request, *args, **kwargs)
+
 
 class CeleryAsyncModelCallMethodsView(ModelCallMethodsView):
     

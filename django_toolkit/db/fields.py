@@ -8,6 +8,7 @@ from django.core import validators
 from django.db import models
 from django.utils import timezone
 from south.modelsinspector import add_introspection_rules
+from dateutil import parser
 
 
 # see https://code.djangoproject.com/ticket/12276
@@ -42,7 +43,10 @@ class UnixDateTimeField(models.DateTimeField):
             return None
         if value == 0 and self.zero_null:
             return None
-        value = datetime.fromtimestamp(float(value))
+        try:
+            value = datetime.fromtimestamp(float(value))
+        except ValueError:
+            return parser.parse(value)
         if settings.USE_TZ:
             if self.is_utc:
                 # It's a unixtimestamp, it *should* be utc
