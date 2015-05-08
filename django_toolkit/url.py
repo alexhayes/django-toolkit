@@ -1,8 +1,11 @@
 from __future__ import absolute_import
+
+from urlparse import urlparse
+
 import tldextract
 
 
-def shorten_url(url, length=32, strip_www=True):
+def shorten_url(url, length=32, strip_www=True, strip_path=True, ellipsis=False):
     """
     Shorten a URL by chopping out the middle.
 
@@ -11,26 +14,38 @@ def shorten_url(url, length=32, strip_www=True):
 
     sub...le.com.au
     """
-    ext = tldextract.extract(url)
-    if ext.subdomain and (strip_www == False or (strip_www and ext.subdomain != 'www')):
-        url = '%s.%s.%s' % (ext.subdomain, ext.domain, ext.tld)
-    else:
-        url = '%s.%s' % (ext.domain, ext.tld)
+    if '://' not in url:
+        # Ensure we have a protocol
+        url = 'http://%s' % url
 
-    if len(url) <= length:
-        return url
+    parsed_url = urlparse(url)
+    ext = tldextract.extract(parsed_url.netloc)
+    if ext.subdomain and (not strip_www or (strip_www and ext.subdomain != 'www')):
+        shortened = u'%s.%s' % (ext.subdomain, ext.domain)
     else:
-        if ext.subdomain and (strip_www == False or (strip_www and ext.subdomain != 'www')):
-            domain = '%s.%s' % (ext.subdomain, ext.domain)
-        else:
-            domain = ext.domain
-        i = length - 3 - len(ext.tld) #23
-        y = i/2  #3
+        shortened = u'%s' % ext.domain
+
+    if ext.tld:
+        shortened = u'%s.%s' % (shortened, ext.tld)
+
+    if not strip_path:
+        if parsed_url.path:
+            shortened += parsed_url.path
+
+    if len(shortened) <= length:
+        return shortened
+    else:
+        domain = shortened
+        i = length + 1 - 3
         left = right = i/2
         if not i % 2:
             right -= 1
-        domain = '%s...%s' % (domain[:left], domain[-right:])
-        return '%s.%s' % (domain, ext.tld)
+        if ellipsis:
+            shortened = u"%s\u2026%s" % (domain[:left], domain[-right:])
+        else:
+            shortened = '%s...%s' % (domain[:left], domain[-right:])
+
+        return shortened
 
 
 def netloc_no_www(url):

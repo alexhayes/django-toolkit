@@ -254,7 +254,7 @@ class AjaxMixin(object):
         return HttpResponse(json.dumps(context, cls=JSON_ENCODER), 
                             content_type='application/json',
                             **response_kwargs)
-    
+
 class ModelCallMethodsView(SingleObjectMixin, RedirectNextOrBackView):
     """
     Call methods on a model and then redirect.
