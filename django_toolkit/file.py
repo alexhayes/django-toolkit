@@ -4,6 +4,8 @@ import sys
 from tempfile import NamedTemporaryFile
 from contextlib import contextmanager
 from django.core.files.base import File
+from django.conf import settings
+
 
 @contextmanager
 def smart_open(filename=None, mode='r', *args, **kwargs):
@@ -24,16 +26,18 @@ def smart_open(filename=None, mode='r', *args, **kwargs):
         if fh is not sys.stdout and fh is not sys.stdin:
             fh.close()
 
+
 @contextmanager
 def tempfile(**kwargs):
     f = NamedTemporaryFile(**kwargs)
     yield f
 
+
 @contextmanager
 def tempfilename(**kwargs):
     """
     Reserve a temporary file for future use.
-    
+
     This is useful if you want to get a temporary file name, write to it in the
     future and ensure that if an exception is thrown the temporary file is removed.
     """
@@ -47,6 +51,7 @@ def tempfilename(**kwargs):
             # Ensure we clean up after ourself
             os.unlink(f.name)
         raise
+
 
 class FileSystemFile(File):
     """
@@ -70,3 +75,16 @@ class FileSystemFile(File):
                 # could unlink it.  Still sets self.file.close_called and
                 # calls self.file.file.close() before the exception
                 raise
+
+
+def makedirs(p):
+    """
+    A makedirs that avoids a race conditions for multiple processes attempting to create the same directory.
+    """
+    try:
+        os.makedirs(p, settings.FILE_UPLOAD_PERMISSIONS)
+    except OSError:
+        # Perhaps someone beat us to the punch?
+        if not os.path.isdir(p):
+            # Nope, must be something else...
+            raise
