@@ -1,6 +1,10 @@
 from __future__ import absolute_import
+from __future__ import print_function
 
-from urlparse import urlparse
+try:
+    from urlparse import urlparse
+except ImportError:
+    from urllib.parse import urlparse
 
 import tldextract
 
@@ -37,7 +41,7 @@ def shorten_url(url, length=32, strip_www=True, strip_path=True, ellipsis=False)
     else:
         domain = shortened
         i = length + 1 - 3
-        left = right = i/2
+        left = right = int(i/2)
         if not i % 2:
             right -= 1
         if ellipsis:
