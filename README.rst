@@ -62,7 +62,6 @@ on your OS, on Ubuntu you can do the following;
 	sudo apt-get install python-software-properties
 	sudo add-apt-repository ppa:fkrull/deadsnakes
 	sudo apt-get update
-	sudo apt-get install python2.6 python2.6-dev
 	sudo apt-get install python2.7 python2.7-dev
 	sudo apt-get install python3.3 python3.3-dev
 	sudo apt-get install python2.6 python3.4-dev
