@@ -15,6 +15,7 @@ if not settings.configured:
             'django.contrib.sessions',
             'django_nose',
             'django_toolkit',
+            'django_toolkit.tests.testapp',
         ],
         # Django replaces this, but it still wants it. *shrugs*
         DATABASE_ENGINE='django.db.backends.sqlite3',
@@ -38,7 +39,8 @@ if not settings.configured:
 
 
 def runtests():
-    argv = sys.argv[:1] + ['test'] + sys.argv[1:]
+    test_args = sys.argv[1:] if len(sys.argv[1:]) > 0 else ['django_toolkit.tests']
+    argv = sys.argv[:1] + ['test'] + test_args
     execute_from_command_line(argv)
 
 

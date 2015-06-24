@@ -64,7 +64,7 @@ on your OS, on Ubuntu you can do the following;
 	sudo apt-get update
 	sudo apt-get install python2.7 python2.7-dev
 	sudo apt-get install python3.3 python3.3-dev
-	sudo apt-get install python2.6 python3.4-dev
+	sudo apt-get install python3.4 python3.4-dev
 	sudo apt-get install pypy pypy-dev
 
 
