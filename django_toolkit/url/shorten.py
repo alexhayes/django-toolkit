@@ -61,3 +61,4 @@ def netloc_no_www(url):
         return '%s.%s.%s' % (ext.subdomain, ext.domain, ext.tld) 
     else:
         return '%s.%s' % (ext.domain, ext.tld)
+
