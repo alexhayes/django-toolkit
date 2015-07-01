@@ -1,5 +1,5 @@
 from django.utils import unittest
-from django_toolkit.url import shorten_url, netloc_no_www
+from django_toolkit.url.shorten import shorten_url, netloc_no_www
 
 
 class ShortenUrlTestCases(unittest.TestCase):
