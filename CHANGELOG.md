@@ -1,3 +1,7 @@
+# Release 0.3.0 - Wed Jul  1 11:54:26 AEST 2015
+
+- Added URL methods url_with_protocol and resolve_url. Refactored other url methods
+
 # Release 0.2.2 - Mon Jun 29 10:42:33 AEST 2015
 
 - Changed requirements to Django>=1.7,<1.9
