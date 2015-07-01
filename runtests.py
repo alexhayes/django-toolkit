@@ -33,7 +33,7 @@ if not settings.configured:
                    '--cover-erase',
                    '--with-fixture-bundling',
                    # Nose Progressive
-                    '--with-progressive',
+                   '--with-progressive',
                    ]
     )
 
