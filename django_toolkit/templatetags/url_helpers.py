@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from django import template
-from django_toolkit.url.shorten.url import shorten_url as _shorten_url
-from django_toolkit.url.shorten.url import netloc_no_www as _netloc_no_www
+from django_toolkit.url.shorten import shorten_url as _shorten_url
+from django_toolkit.url.shorten import netloc_no_www as _netloc_no_www
 
 register = template.Library()
 
