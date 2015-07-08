@@ -1,3 +1,7 @@
+# Release 0.3.1 - Wed Jul  8 11:20:38 AEST 2015
+
+- Fixed import error with url_helpers template tag - added tests.
+
 # Release 0.3.0 - Wed Jul  1 11:54:26 AEST 2015
 
 - Added URL methods url_with_protocol and resolve_url. Refactored other url methods
