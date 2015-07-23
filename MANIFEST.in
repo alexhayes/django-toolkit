@@ -4,7 +4,7 @@ include README.rst
 include MANIFEST.in
 include setup.cfg
 include setup.py
-recursive-include django-toolkit *.py
+recursive-include django_toolkit *
 recursive-include docs *
 recursive-include requirements *.txt
 prune *.pyc
