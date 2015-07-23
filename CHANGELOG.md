@@ -1,3 +1,7 @@
+# Release 0.3.2 - Thu Jul 23 13:54:12 AEST 2015
+
+- Ensured templates are included in installation.
+
 # Release 0.3.1 - Wed Jul  8 11:20:38 AEST 2015
 
 - Fixed import error with url_helpers template tag - added tests.
