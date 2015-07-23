@@ -130,4 +130,5 @@ setup(
     test_suite='nose.collector',
     classifiers=classifiers,
     entry_points=entrypoints,
-    long_description=long_description)
+    long_description=long_description,
+    include_package_data=True)
