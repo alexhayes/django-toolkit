@@ -1,3 +1,7 @@
+# Release 0.3.3 - Mon Jul 27 09:32:17 AEST 2015
+
+- Added extra_form_classes to generic form.
+
 # Release 0.3.2 - Thu Jul 23 13:54:12 AEST 2015
 
 - Ensured templates are included in installation.
