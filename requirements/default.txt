@@ -1,4 +1,4 @@
-Django>=1.7,<1.9
+Django>=1.7,<1.12
 django-crispy-forms==1.4.0
 django-durationfield==0.5.1
 python-dateutil==2.4.2
